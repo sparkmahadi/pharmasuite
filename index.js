@@ -1,6 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
+
+
 const { connectToDB } = require('./utils/connectDB');
+
+const medicinesRoute = require('./routes/v1/medicines.route');
+
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -15,7 +22,12 @@ connectToDB()
         console.error('Error starting server:', err);
     });
 
+app.use("/api/v1/medicines", medicinesRoute);
 
 app.get('/', (req, res) => {
     res.send('pharmasuite server is running')
+})
+
+app.all("*", (req, res) => {
+    res.send("No routes found in server");
 })

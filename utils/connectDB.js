@@ -8,7 +8,7 @@ if (process.env.ENVIRONMENT === "PRODUCTION") {
     uri = 'mongodb://localhost:27017';
   }
 
-const dbName = 'medinfo'
+const dbName = 'pharmasuite'
 
 const client = new MongoClient(uri);
 
