@@ -51,6 +51,43 @@ module.exports.updateMedicineById = async (req, res) => {
     }
 };
 
+//* deleting a medicine by id-------------
+    module.exports.deleteMedicineById = async (req, res) => {
+    try {
+      const id = req.params.id;
+  
+      // Validate the ID format
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid medicine ID format.",
+        });
+      }
+  
+      const filter = { _id: new ObjectId(id) };
+      const result = await medicine.deleteOne(filter);
+  
+      if (result.deletedCount === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Medicine not found.",
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: "Medicine deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting medicine:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error.",
+      });
+    }
+  };
+  
+
 //* updating or adding lastSoldDate--------------------------
     module.exports.updateLastSoldDate = async (req, res) => {
     try {
@@ -126,3 +163,33 @@ module.exports.updateMedicineById = async (req, res) => {
         });
     }
 };
+
+//* deleting any specific field of a specific medicine------------------
+    module.exports.deleteFieldsById = async (req, res) => {
+    const { id, field } = req.params;
+  
+    try {
+      const filter = { _id: new ObjectId(id) };
+      const update = { $unset: { [field]: "" } }; // Unset the field
+  
+      const updateResult = await medicine.updateOne(filter, update);
+  
+      if (updateResult.matchedCount === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Medicine not found',
+        });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: `Field '${field}' deleted successfully`,
+      });
+    } catch (error) {
+      console.error('Error deleting field from medicine:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Something went wrong from delete field',
+      });
+    }
+  };
